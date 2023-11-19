@@ -1,0 +1,8 @@
+{
+    "guild_id": {
+        "counter": 0,
+        "timestamp": 0,
+        "highest": 0,
+        "hasSetup": false
+    }
+}
