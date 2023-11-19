@@ -58,6 +58,7 @@ async def highest(ctx):
     await ctx.send(f"highest number recorded for this guild : **{json_data[f'{ctx.guild.id}']['highest']}**")
 
 @bot.command(name='setup')
+@commands.has_permissions(administrator=True)
 async def setup(ctx):
     await ctx.send("reply with the id of the channel you want to set up for counting :")
 
