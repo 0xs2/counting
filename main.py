@@ -50,9 +50,13 @@ async def on_guild_join(guild):
     await guild.system_channel.send(f'hi, i am a counting bot! set me up with `{os.getenv("PREFIX")}setup` !')
 
 
+@bot.command(name='commands')
+async def commands(ctx):
+    await ctx.send(f"my commands are `{os.getenv('PREFIX')}help`, `{os.getenv('PREFIX')}highest`, `{os.getenv('PREFIX')}setup`")
+
 @bot.command(name='highest')
 async def highest(ctx):
-    await ctx.send(f"highest number recorded for this guild : **{json_data[f'{ctx.channel.id}']['highest']}**")
+    await ctx.send(f"highest number recorded for this guild : **{json_data[f'{ctx.guild.id}']['highest']}**")
 
 @bot.command(name='setup')
 async def setup(ctx):
@@ -87,26 +91,29 @@ async def on_message(message):
     if f'{message.guild.id}' in json_data:
 
         if json_data[f'{message.guild.id}']['hasSetup']:
-            # lol no breaking chain idiot
-            try:
-                content_as_int = int(message.content)
 
-                # count lol
-                if content_as_int != json_data[f'{message.guild.id}']['counter']+1:
-                    json_data[f'{message.guild.id}']['counter'] = 0
-                    save_json(json_file_path, json_data)
-                    await message.reply("you broke the chain, idiot.")
+            # only counter when its in the proper channel
+            if message.channel.id == json_data[f'{message.guild.id}']['countChannelID']:
+                # lol no breaking chain idiot
+                try:
+                    content_as_int = int(message.content)
 
-                if content_as_int == json_data[f'{message.guild.id}']['counter']+1:
-                    json_data[f'{message.guild.id}']['counter'] = content_as_int
-                    save_json(json_file_path, json_data)
-            
-                if content_as_int < json_data[f'{message.guild.id}']['highest']:
-                    json_data[f'{message.guild.id}']['highest'] = content_as_int
-                    save_json(json_file_path, json_data)
+                    # count lol
+                    if content_as_int != json_data[f'{message.guild.id}']['counter']+1:
+                        json_data[f'{message.guild.id}']['counter'] = 0
+                        save_json(json_file_path, json_data)
+                        await message.reply("you broke the chain, idiot.")
 
-            except ValueError:
-                await message.delete()
+                    if content_as_int == json_data[f'{message.guild.id}']['counter']+1:
+                        json_data[f'{message.guild.id}']['counter'] = content_as_int
+                        save_json(json_file_path, json_data)
+                
+                    if content_as_int < json_data[f'{message.guild.id}']['highest']:
+                        json_data[f'{message.guild.id}']['highest'] = content_as_int
+                        save_json(json_file_path, json_data)
+
+                except ValueError:
+                    await message.delete()
 
 
     
