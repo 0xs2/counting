@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/python
 import discord
 import time
 import json
@@ -11,7 +11,7 @@ load_dotenv()
 
 intents = discord.Intents.all()
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
 
 
 def load_json(file_path):
@@ -49,6 +49,10 @@ async def on_guild_join(guild):
 
     await guild.system_channel.send(f'hi, i am a counting bot! set me up with `{os.getenv("PREFIX")}setup` !')
 
+
+@bot.command(name='highest')
+async def highest(ctx):
+    await ctx.send(f"highest number recorded for this guild : **{json_data[f'{ctx.channel.id}']['highest']}**")
 
 @bot.command(name='setup')
 async def setup(ctx):
