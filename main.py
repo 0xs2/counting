@@ -37,15 +37,14 @@ async def on_ready():
 
 @bot.event
 async def on_guild_join(guild):
-    if guild.id not in json_data:
-        json_data[guild.id] = {
+    if f'{guild.id}' not in json_data:
+        json_data[f'{guild.id}'] = {
             counter: 0,
             timestamp: round(time.time()),
             highest: 0,
             hasSetup: False
         }
-
-    save_json(json_file_path, json_data)
+        save_json(json_file_path, json_data)
 
     await guild.system_channel.send(f'hi, i am a counting bot! set me up with `{os.getenv("PREFIX")}setup` !')
 
@@ -108,9 +107,9 @@ async def on_message(message):
                         json_data[f'{message.guild.id}']['counter'] = content_as_int
                         save_json(json_file_path, json_data)
                 
-                    if content_as_int < json_data[f'{message.guild.id}']['highest']:
-                        json_data[f'{message.guild.id}']['highest'] = content_as_int
-                        save_json(json_file_path, json_data)
+                        if content_as_int > json_data[f'{message.guild.id}']['highest']:
+                            json_data[f'{message.guild.id}']['highest'] = content_as_int
+                            save_json(json_file_path, json_data)
 
                 except ValueError:
                     await message.delete()
