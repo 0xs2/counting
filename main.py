@@ -42,6 +42,8 @@ async def on_guild_join(guild):
             counter: 0,
             timestamp: round(time.time()),
             highest: 0,
+            countChannelID: 0,
+            lastUser: 0,
             hasSetup: False
         }
         save_json(json_file_path, json_data)
@@ -58,7 +60,6 @@ async def highest(ctx):
     await ctx.send(f"highest number recorded for this guild : **{json_data[f'{ctx.guild.id}']['highest']}**")
 
 @bot.command(name='setup')
-@commands.has_permissions(administrator=True)
 async def setup(ctx):
     await ctx.send("reply with the id of the channel you want to set up for counting :")
 
@@ -98,7 +99,11 @@ async def on_message(message):
                 try:
                     content_as_int = int(message.content)
 
-                    # count lol
+                    # dont allow the same user to uh, keep counting themselves
+                    if json_data[f'{message.guild.id}']['lastUser'] == message.author.id:
+                        await message.delete()
+
+                    # count otherwise lol
                     if content_as_int != json_data[f'{message.guild.id}']['counter']+1:
                         json_data[f'{message.guild.id}']['counter'] = 0
                         save_json(json_file_path, json_data)
@@ -107,10 +112,14 @@ async def on_message(message):
                     if content_as_int == json_data[f'{message.guild.id}']['counter']+1:
                         json_data[f'{message.guild.id}']['counter'] = content_as_int
                         save_json(json_file_path, json_data)
-                
+
                         if content_as_int > json_data[f'{message.guild.id}']['highest']:
                             json_data[f'{message.guild.id}']['highest'] = content_as_int
                             save_json(json_file_path, json_data)
+            
+                    json_data[f'{message.guild.id}']['lastUser'] = message.author.id
+                    save_json(json_file_path, json_data)   
+
 
                 except ValueError:
                     await message.delete()

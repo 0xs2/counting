@@ -3,6 +3,8 @@
         "counter": 0,
         "timestamp": 0,
         "highest": 0,
+        "countChannelID": 0,
+        "lastUser": 0,
         "hasSetup": false
     }
 }
